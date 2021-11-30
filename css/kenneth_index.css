@@ -324,20 +324,19 @@ footer{
 	border-bottom: solid 1px black;
 }
 
+.details-cont img{
+	background-repeat: no-repeat;
+    border: solid 1px #fefefe;
+    border-radius: 50%;
+    width: 305px;
+    height: 305px;
+}
+
 .details-cont .del-btn{
 	width: 90px;
 	background: #cc0000;
 	color: #fff;
 	cursor: pointer;
-}
-
-
-.details-cont img{
-	background-repeat: no-repeat;
-    border: solid 1px #fefefe;
-    border-radius: 50%;
-    width: 300px;
-    height: 300px;
 }
 
 @media(max-width: 735px){
