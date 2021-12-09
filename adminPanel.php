@@ -6,45 +6,25 @@ if (!$sess) {
 }
 
 include('./inc/dbConn.php');
+include_once('inc/autoloader.inc.php');
+
+
+use Classes\Controllers\AvailableContr;
 
 
 $pdo = new PDO($dsn,$user,$pwd);
 
-$msgAva = ['success' => '', 'error' => ''];
 $msgTrn = ['success' => '', 'error' => ''];
 $msgRsd = ['success' => '', 'error' => ''];
-$errorAva = '';
 $errorTrn = '';
 $errorRsd = '';
 
 $congrats = array('ava' => '', 'trn' => '', 'rsd' => '');
 
+$AvaContr = new AvailableContr();
 
-if (isset($_POST['submitAva'])) {
-	$desAva = trim($_POST['desAva']);
-	$priceAva = trim($_POST['priceAva']);
-	$phoneAva = trim($_POST['phoneAva']);
-	$imgAva = $_FILES['imgAva']['name'];
-	$img_textAva = trim($_POST['imgTextAva']);
-	$targetAva = "img/". basename($imgAva);
+$msgs = $AvaContr->createAllData();
 
-	// form validation
-	if (empty($desAva) || empty($priceAva) || empty($imgAva) || empty($phoneAva) || empty($img_textAva)) {
-		$errorAva = '*All fields are required*';
-	}else{
-
-	$sql = "INSERT INTO available(image, img_dir, description, price, phone) VALUES(:img, :img_text, :des, :price, :phone)";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute(['img' => $imgAva, 'img_text' => $img_textAva, 'des' => $desAva, 'price' => $priceAva, 'phone' => $phoneAva]);
-
-	if (move_uploaded_file($_FILES['imgAva']['tmp_name'], $targetAva)) {
-  		$msg = "Image uploaded successfully";
-  	}else{
-  		$msg = "Failed to upload image";
-  	}
-  		$congrats['ava'] =  'File uploaded successfully';
-   }
- }
 
 if (isset($_POST['submitTrn'])) {
 	$desTrn = trim($_POST['desTrn']);
@@ -129,10 +109,10 @@ if (isset($_POST['submitTrn'])) {
 			<input type="file" name="imgAva" accept="image/*" value="<?php echo htmlspecialchars($imgAva ?? '') ?>">
 			<input type="text" name="imgTextAva" placeholder="Image name.." value="<?php echo htmlspecialchars($img_textAva ?? '') ?>">	
 			<input type="submit" name="submitAva" value="Upload">
-			<p id="error-text"><?php echo $errorAva ?></p>
-			<p id="success-text"><?php echo $congrats['ava'] ?></p>
-			<p id="error-text"><?php echo $msgAva['error']; ?></p>
-			<p id="success-text"><?php echo $msgAva['success']; ?></p>
+			<p id="error-text"><?php echo $msgs['error'] ?? '' ?></p>
+			<p id="success-text"><?php echo $msgs['congrats'] ?? '' ?></p>
+			<p id="success-text"><?php echo $msgs['img_msg'] ?? '' ?></p>
+
 	  	</div>
 	  	<div class="panel-form">
 	  		<h2>Trending</h2>

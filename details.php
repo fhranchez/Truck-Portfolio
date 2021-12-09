@@ -2,46 +2,42 @@
 session_start();
 
 include('./inc/dbConn.php');
+include_once('inc/autoloader.inc.php');
+
+use Classes\Controllers\AvailableContr;
+use Classes\Views\AvailableView;
 
 $pdo = new PDO($dsn,$user,$pwd);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-if (isset($_GET['id'])) {
+if (isset($_GET['trn-id'])) {
 
-	$idAva = $_GET['id'];
-	$sqlAva = "SELECT * FROM available WHERE id =:id";
-	$stmtAva = $pdo->prepare($sqlAva);
-	$stmtAva->execute(['id' => $idAva]);
-	$dataAva = $stmtAva->fetchAll();
-}
-
-
-if (isset($_GET['id'])) {
-
-	$idTrn = $_GET['id'];
+	$idTrn = $_GET['trn-id'];
 	$sqlTrn = "SELECT * FROM trending WHERE id =:id";
 	$stmtTrn = $pdo->prepare($sqlTrn);
 	$stmtTrn->execute(['id' => $idTrn]);
 	$dataTrn = $stmtTrn->fetchAll();
 }
 
-if (isset($_GET['id'])) {
+if (isset($_GET['rsd-id'])) {
 
-	$idRsd = $_GET['id'];
+	$idRsd = $_GET['rsd-id'];
 	$sqlRsd = "SELECT * FROM recently_created WHERE id =:id";
 	$stmtRsd = $pdo->prepare($sqlRsd);
 	$stmtRsd->execute(['id' => $idRsd]);
 	$dataRsd = $stmtRsd->fetchAll();
 }
 
-//Deleting Data
 
-if (isset($_POST['deleteAva'])) {
-	$idAva = $_POST['id_to_deleteAva'];
-	$sqlAva = "DELETE FROM available WHERE id = :id";
-	$stmtAva = $pdo->prepare($sqlAva);
-	$stmtAva->execute(['id' => $idAva]);
-}
+$avaContr = new AvailableContr();
+$avaView = new AvailableView();
+
+// DIsplaying a Single Row
+$dataAva = $avaView->getSingleId();
+
+//Deleting Data
+$avaContr->deleteSingleId();
+
 
 if (isset($_POST['deleteTrn'])) {
 	$idTrn = $_POST['id_to_deleteTrn'];
@@ -61,22 +57,11 @@ $sess = $_SESSION['password'] ?? ''
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>	
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Details Page</title>
- 	<link rel="stylesheet" href="css/kenneth_index.css?v<?php echo time(); ?>">
- 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-</head>
-<body>
-  <div class="container">
-		<?php include_once'./inc/header.php' ?>
+<?php include_once'./inc/header.php' ?>
 
-		<?php include_once'./inc/navbar.php' ?>
+<?php include_once'./inc/navbar.php' ?>
 
-		<?php if (isset($_GET['id'])) {?>
+		<?php if (isset($_GET['ava-id'])) {?>
 		<?php if ($dataAva) { ?>
 		<?php foreach ($dataAva as $postAva) { ?>
 		<div class="details-cont border">
@@ -96,7 +81,7 @@ $sess = $_SESSION['password'] ?? ''
 	<?php } ?>
 <?php } ?>
 
-		<?php if (isset($_GET['id'])) {?>
+		<?php if (isset($_GET['trn-id'])) {?>
 		<?php if ($dataTrn) { ?>
 			<?php foreach ($dataTrn as $postTrn) { ?>
 			<div class="details-cont border">
@@ -118,7 +103,7 @@ $sess = $_SESSION['password'] ?? ''
 	<?php } ?>
 <?php } ?>
 
-		<?php if (isset($_GET['id'])) {?>
+		<?php if (isset($_GET['rsd-id'])) {?>
 		<?php if ($dataRsd) { ?>
 			<?php foreach ($dataRsd as $postRsd) { ?>
 			<div class="details-cont border">
@@ -139,7 +124,7 @@ $sess = $_SESSION['password'] ?? ''
 	<?php } ?>
 <?php } ?>
 
-</div>
+
 <?php include'./inc/footer.php' ?>
 </body>
 </html>

@@ -6,6 +6,9 @@ if (!$sess) {
 }
 
 include('./inc/dbConn.php');
+include_once('inc/autoloader.inc.php');
+
+use Classes\Controllers\AvailableContr;
 
 
 $pdo = new PDO($dsn,$user,$pwd);
@@ -32,30 +35,11 @@ $fetchStmtRsd->execute(['id' => $fetchIdRsd]);
 
 $resultRsd = $fetchStmtRsd->fetchAll();
 
+// Updating THe Available Table
+$objAva = new AvailableContr();
 
-if (isset($_POST['submit'])) {
-	$id = $_GET['ava-id'] ?? '';
-	$des = trim($_POST['description'] ?? '');
-	$price = trim($_POST['price'] ?? '');
-	$phone = trim($_POST['phone'] ?? '');
-	$imageAva = $_FILES['imgAva']['name'] ?? '';
- 	$imgPath = "img/". basename($imageAva);
+$msgs = $objAva->updateData();
 
-
-	//form validation
- 	if (empty($des) || empty($price) || empty($phone) || empty($imageAva)) {
- 		$error = '*All fields are required*';
- 	}else {
- 		$sql = "UPDATE available SET description = :des, price = :price, image = :image, phone = :phone WHERE id = :id";
- 		$stmt = $pdo->prepare($sql); 
- 		$stmt->execute(['des' => $des, 'price' => $price, 'image' => $imageAva, 'phone' => $phone, 'id' => $id]);
-
- 		if (!move_uploaded_file($_FILES['imgAva']['tmp_name'], $imgPath)) {
-	  		$msg = "Failed to upload image";
-	  	}
-	  	$success = 'file uploaded successfully';
- 	}
- }
 
  if (isset($_POST['submit-trn'])) {
 	$idTrn = $_GET['trn-id'] ?? '';
@@ -107,19 +91,8 @@ if (isset($_POST['submit'])) {
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Update Info</title>
-	<link rel="stylesheet" href="css/kenneth_index.css?v<?php echo time(); ?>">
- 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-</head>
-<body>
-	<div class="container">
-		<?php include'./inc/header.php' ?>
-		<?php include'./inc/navbar.php' ?>
+<?php include'./inc/header.php' ?>
+<?php include'./inc/navbar.php' ?>
 		<form action="" method="POST" class="update-cont border" enctype="multipart/form-data">
 			<h2>Update Data</h2>
 			<?php if (isset($_GET['ava-id'])): ?>
@@ -147,9 +120,9 @@ if (isset($_POST['submit'])) {
 					<input type="submit" value="Edit" name="submit">
 				<?php endforeach ?>
 			<?php endif ?>
-					<p id="error-text"><?php echo $error ?? '' ?></p>
-					<p id="error-text"><?php echo $msg ?? '' ?></p>
-				<p id="success-text"><?php echo $success ?? '' ?></p>
+					<p id="error-text"><?php echo $msgs['error'] ?? '' ?></p>
+					<p id="error-text"><?php echo $msgs['img_msg'] ?? '' ?></p>
+					<p id="success-text"><?php echo $msgs['success'] ?? '' ?></p>
 
 <!-- Trending -->
 
