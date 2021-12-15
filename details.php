@@ -33,10 +33,10 @@ $avaContr = new AvailableContr();
 $avaView = new AvailableView();
 
 // DIsplaying a Single Row
-$dataAva = $avaView->getSingleId();
+$dataAva = $avaView->getId();
 
 //Deleting Data
-$avaContr->deleteSingleId();
+$avaContr->delete();
 
 
 if (isset($_POST['deleteTrn'])) {
@@ -72,8 +72,8 @@ $sess = $_SESSION['password'] ?? ''
 			<p>Phone: <?php echo $postAva['phone']; ?></p>
 			<form action="details.php" method="POST">
 			<?php if (!empty($_SESSION['password'])) { ?>
- 			<input type="hidden" name="id_to_deleteAva" value="<?php echo $postAva['id'] ?>">
- 			<input type="submit" class="del-btn" name="deleteAva" value="Delete">
+	 			<input type="hidden" name="id_to_deleteAva" value="<?php echo $postAva['id'] ?>">
+	 			<input type="submit" class="del-btn" name="deleteAva" value="Delete">
  			<?php } ?>
 	 		</form>
 	</div>

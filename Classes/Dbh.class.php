@@ -1,7 +1,7 @@
 <?php
 namespace Classes;
 
-class Dbh {
+trait Dbh {
 	private $host = 'localhost';
 	private $user = 'root';
 	private $pwd = '';

@@ -1,30 +1,31 @@
 <?php 
 namespace Classes\Controllers;
 
-use  Classes\Models as Models;
+use Classes\Models as Models;
+use Classes\Controllers as Controllers;
 
 class AvailableContr extends Models\Available {
-	public function createAllData() {
-		$msgs = $this->createAllDataQry();
+	use Controllers\Controller;
+
+	public function create() {
+		$msgs = $this->createAllData();
 
 		return $msgs;
 	}
 
-	public function updateData() {
-		$msgs = $this->updateDataQry();
+	public function update() {
+		$msgs = $this->updateData();
 
 		return $msgs;
 	}
 
-	public function deleteSingleId() {
-		$this->deleteSingleIdQry();
+	public function delete() {
+		$this->deleteSingleId();
 	}
 
-	public function pagination($tbName) {
-		$query = $this->connect()->query("SELECT COUNT(*) FROM $tbName");
-		$rowCount  = $query->fetchColumn();
-		$numOfPages = ceil($rowCount/$this->resultPerPage);
+	public function paginateCount() {
+		$data = $this->pagination($this->tbName);
 
-		return $numOfPages;
+		return $data;
 	}
 }

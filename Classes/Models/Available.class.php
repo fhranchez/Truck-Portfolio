@@ -1,105 +1,61 @@
 <?php  
 namespace Classes\Models;
 
-class Available extends \Classes\Dbh{
+use  Classes\Models as Models;
 
-	protected $resultPerPage = 2;
+class Available{
+	use Models\Model;
 
-	protected function createAllDataQry() {
-		$msgs = [];
-		if (isset($_POST['submitAva'])) {
-			$desAva = trim($_POST['desAva']);
-			$priceAva = trim($_POST['priceAva']);
-			$phoneAva = trim($_POST['phoneAva']);
-			$imgAva = $_FILES['imgAva']['name'];
-			$img_textAva = trim($_POST['imgTextAva']);
-			$targetAva = "img/". basename($imgAva);
+	protected $tbName = 'available';
 
-			// form validation
-			if (empty($desAva) || empty($priceAva) || empty($imgAva) || empty($phoneAva) || empty($img_textAva)) {
-				$msgs['error'] = '*All fields are required*';
-			}else{
-				$sql = "INSERT INTO available(image, img_dir, description, price, phone) VALUES(:img, :img_text, :des, :price, :phone)";
-				$stmt = $this->connect()->prepare($sql);
-				$stmt->execute(['img' => $imgAva, 'img_text' => $img_textAva, 'des' => $desAva, 'price' => $priceAva, 'phone' => $phoneAva]);
-
-				if (move_uploaded_file($_FILES['imgAva']['tmp_name'], $targetAva)) {
-			  		$msgs['img_msg'] = "Image uploaded successfully";
-			  	}else{
-			  		$msgs['img_msg'] = "Failed to upload image";
-			  	}
-		  		$msgs['congrats'] =  'File uploaded successfully';
-		   }
-		 }
+	protected function createAllData() {
+		$msgs = $this->createAllDataQry(
+				$_POST['submitAva'] ?? null,
+				$_POST['desAva'] ?? '',
+				$_POST['phoneAva'] ?? '',
+				$_POST['priceAva'] ?? '',
+				$_FILES['imgAva']['name'] ?? '',
+				$_POST['imgTextAva'] ?? '',
+				$this->tbName
+				);
 		
 		return $msgs;
+
 	}
 
-	protected function getAllDataQry(){
-		// Get All data with pagination
-		if (!isset($_GET['page-ava'])) {
-			$pageAva = 1;
-		}else{
-			$pageAva = $_GET['page-ava'];
-		}
+	protected function getAllData() {
+		$data = $this->getAllDataQry($_GET['page-ava'] ?? null,$this->tbName);	
 
-		$offset =  ($pageAva-1)*$this->resultPerPage; 
-		$sql = "SELECT * FROM available ORDER BY id desc LIMIT $offset,$this->resultPerPage";
-		$stmt = $this->connect()->query($sql);
-
-		return $stmt;
+		return $data;
 	}
 
-	protected function getSingleIdQry() {
-		if (isset($_GET['ava-id'])) {
-			$id = $_GET['ava-id'];
-			$sql = "SELECT * FROM available WHERE id =:id";
-			$stmt = $this->connect()->prepare($sql);
-			$stmt->execute(['id' => $id]);
-			$data = $stmt->fetchAll();
+	protected function getSingleId() {
+		$data = $this->getSingleIdQry($_GET['ava-id'] ?? null, $this->tbName);
 
-			return $data;
-}
+		return $data;
 	}
 
-	protected function updateDataQry() {
-		$msgs = [];
-		if (isset($_POST['submit'])) {
-			$id = $_GET['ava-id'] ?? '';
-			$des = trim($_POST['description'] ?? '');
-			$price = trim($_POST['price'] ?? '');
-			$phone = trim($_POST['phone'] ?? '');
-			$image = $_FILES['imgAva']['name'] ?? '';
-		 	$imgPath = "img/". basename($image);
-
-
-		//form validation
-	 	if (empty($des) || empty($price) || empty($phone) || empty($image)) {
-	 		$msgs['error'] = '*All fields are required*';
-	 	}else {
-	 		$sql = "UPDATE available SET description = :des, price = :price, image = :image, phone = :phone WHERE id = :id";
-	 		$stmt = $this->connect()->prepare($sql); 
-	 		$stmt->execute(['des' => $des, 'price' => $price, 'image' => $image, 'phone' => $phone, 'id' => $id]);
-
-	 		if (!move_uploaded_file($_FILES['imgAva']['tmp_name'], $imgPath)) {
-		  		$msgs['img_msg'] = "Failed to upload image";
-		  	}
-		  	$msgs['success'] = 'file updated successfully';
-	 	 }
-		}
+	protected function updateData(){
+		$msgs = $this->updateDataQry(
+			$_POST['submit'] ?? null,
+			$_GET['ava-id'] ?? null,
+			$_POST['description'] ?? '',
+			$_POST['price'] ?? '',
+			$_POST['phone'] ?? '',
+			$_FILES['imgAva']['name'] ?? '',
+			$_FILES['imgAva']['tmp_name'] ?? null,
+			$this->tbName
+		);
 
 		return $msgs;
 	}
 
-	protected function deleteSingleIdQry() {
-		if (isset($_POST['deleteAva'])) {
-			$id = $_POST['id_to_deleteAva'];
-			$sql = "DELETE FROM available WHERE id = :id";
-			$stmt = $this->connect()->prepare($sql);
-			$stmt->execute(['id' => $id]);
-		}
+	protected function deleteSingleId() {
+		$this->deleteSingleIdQry(
+			$_POST['deleteAva'] ?? null,
+			$_POST['id_to_deleteAva'] ?? '',
+			$this->tbName);
 	}
-
 }
 
 

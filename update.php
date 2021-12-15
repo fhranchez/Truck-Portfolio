@@ -9,16 +9,14 @@ include('./inc/dbConn.php');
 include_once('inc/autoloader.inc.php');
 
 use Classes\Controllers\AvailableContr;
+use Classes\Views\AvailableView;
 
 
 $pdo = new PDO($dsn,$user,$pwd);
 
-$fetchId = $_GET['ava-id'] ?? ''; 
-$fetchSql = "SELECT * FROM available WHERE id = :id";
-$fetchStmt = $pdo->prepare($fetchSql);
-$fetchStmt->execute(['id' => $fetchId]);
+$avaView = new AvailableView();
+$result = $avaView->getId();
 
-$result = $fetchStmt->fetchAll();
 
 
 $fetchIdTrn = $_GET['trn-id'] ?? ''; 
@@ -38,7 +36,7 @@ $resultRsd = $fetchStmtRsd->fetchAll();
 // Updating THe Available Table
 $objAva = new AvailableContr();
 
-$msgs = $objAva->updateData();
+$msgs = $objAva->update();
 
 
  if (isset($_POST['submit-trn'])) {

@@ -10,48 +10,24 @@ include_once('inc/autoloader.inc.php');
 
 
 use Classes\Controllers\AvailableContr;
+use Classes\Controllers\TrendingContr;
+
 
 
 $pdo = new PDO($dsn,$user,$pwd);
 
-$msgTrn = ['success' => '', 'error' => ''];
 $msgRsd = ['success' => '', 'error' => ''];
-$errorTrn = '';
 $errorRsd = '';
 
 $congrats = array('ava' => '', 'trn' => '', 'rsd' => '');
 
 $AvaContr = new AvailableContr();
+$msgs = $AvaContr->create();
 
-$msgs = $AvaContr->createAllData();
-
-
-if (isset($_POST['submitTrn'])) {
-	$desTrn = trim($_POST['desTrn']);
-	$priceTrn = trim($_POST['priceTrn']);
-	$phoneTrn = trim($_POST['phoneTrn']);
-	$imgTrn = $_FILES['imgTrn']['name'];
-	$img_textTrn = trim($_POST['imgTextTrn']);
-	$targetTrn = "img/". basename($imgTrn);
+$trnContr = new TrendingContr();
+$msgsTrn = $trnContr->createAllData();
 
 
-	// form validation
-	if (empty($desTrn) || empty($priceTrn) || empty($imgTrn) || empty($phoneTrn) || empty($img_textTrn)) {
-		$errorTrn = '*All fields are required*';
-	}else{
-
-	$sql = "INSERT INTO trending(image, img_dir, description, price, phone) VALUES(:img, :img_text, :des, :price, :phone)";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute(['img' => $imgTrn, 'img_text' => $img_textTrn, 'des' => $desTrn, 'price' => $priceTrn, 'phone' => $phoneTrn]);
-
-	if (move_uploaded_file($_FILES['imgTrn']['tmp_name'], $targetTrn)) {
-  		$msg = "Image uploaded successfully";
-  	}else{
-  		$msg = "Failed to upload image";
-  	}
-  		$congrats['trn'] =  'File uploaded successfully';
-   }
- }
 
  if (isset($_POST['submitRsd'])) {
 	$desRsd = trim($_POST['desRsd']);
@@ -70,7 +46,7 @@ if (isset($_POST['submitTrn'])) {
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute(['img' => $imgRsd, 'img_text' => $img_textRsd, 'des' => $desRsd, 'price' => $priceRsd, 'phone' => $phoneRsd]);
 
-	if (move_uploaded_file($_FILES['imgRsd']['tmp_name'], $targetRsd)) {
+	if (move_uploaded_file($imgRsd, $targetRsd)) {
   		$msg = "Image uploaded successfully";
   	}else{
   		$msg = "Failed to upload image";
@@ -79,25 +55,11 @@ if (isset($_POST['submitTrn'])) {
    }
  }
 
-
-
  ?>
+ 
+<?php include'./inc/header.php' ?>
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
- 	<link rel="stylesheet" href="css/kenneth_index.css?v<?php echo time(); ?>">
- 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-</head>
-<body>
-  <div class="container">
-		<?php include'./inc/header.php' ?>
-
-		<?php include'./inc/navbar.php' ?>
+<?php include'./inc/navbar.php' ?>
 
 	<form action="adminPanel.php" class="admin-form" method="POST" enctype="multipart/form-data">
 		<div class="panel-form">
@@ -123,10 +85,9 @@ if (isset($_POST['submitTrn'])) {
 			<input type="file" name="imgTrn" accept="image/*" value="<?php echo htmlspecialchars($imgTrn ?? '') ?>">
 			<input type="text" name="imgTextTrn" placeholder="Image name.." value="<?php echo htmlspecialchars($img_textTrn ?? '') ?>">	
 			<input type="submit" name="submitTrn" value="Upload">
-			<p id="error-text"><?php echo $errorTrn ?></p>
-			<p id="success-text"><?php echo $congrats['trn'] ?></p>
-			<p id="error-text"><?php echo $msgTrn['error']; ?></p>
-			<p id="success-text"><?php echo $msgTrn['success']; ?></p>
+			<p id="error-text"><?php echo $msgsTrn['error'] ?? '' ?></p>
+			<p id="success-text"><?php echo $msgsTrn['congrats'] ?? '' ?></p>
+			<p id="success-text"><?php echo $msgsTrn['img_msg'] ?? '' ?></p>
 	  	</div>
 	  	<div class="panel-form">
 	  		<h2>Recently Sold</h2>

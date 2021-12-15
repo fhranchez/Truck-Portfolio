@@ -18,8 +18,8 @@ $resultPerPage = 2;
 $avaView = new AvailableView();
 $avaContr = new AvailableContr();
 
-$numOfPagesAva = $avaContr->pagination('available');
-$dataAva = $avaView->getAllData();
+$pageCountAva = $avaContr->paginateCount();
+$dataAva = $avaView->get();
 
 
 
@@ -30,7 +30,7 @@ $dataAva = $avaView->getAllData();
 // // AVAILABLE
 // $dbQueryAva = $pdo->query("SELECT COUNT(*) FROM available");
 // $rowCountAva  = $dbQueryAva->fetchColumn();
-// $numOfPagesAva = ceil($rowCountAva/$resultPerPage);
+// $pageCountAva = ceil($rowCountAva/$resultPerPage);
 
 
 // if (!isset($_GET['page-ava'])) {
@@ -96,7 +96,7 @@ $stmtRsd = $pdo->query("SELECT * FROM recently_created ORDER BY id desc LIMIT $o
 					<?php endif ?>			
 				</div>
 			<?php } ?>
-				<?php for ($page=1; $page <= $numOfPagesAva; $page++) { ?>
+				<?php for ($page=1; $page <= $pageCountAva; $page++) { ?>
 					<a href="index.php?page-ava=<?php echo $page ?>" class="pag-links"><?php echo $page ?></a>
 				<?php } ?>
 		</div>

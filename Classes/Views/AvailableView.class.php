@@ -4,14 +4,14 @@ namespace Classes\Views;
 use  Classes\Models as Models;
 
 class AvailableView extends Models\Available{
-	public function getAllData() {
-		$data = $this->getAllDataQry();
+	public function get() {
+		$data = $this->getAllData();
 
 		return $data;
 	}
 
-	public function getSingleId(){
-		$data = $this->getSingleIdQry();
+	public function getId(){
+		$data = $this->getSingleId();
 
 		return $data;
 	}
