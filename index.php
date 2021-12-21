@@ -1,79 +1,40 @@
 <?php 
-session_start();
-
-include('./inc/dbConn.php');
-
 include_once ('./inc/autoloader.inc.php');
 
 use Classes\Controllers\AvailableContr;
 use Classes\Views\AvailableView;
 
+use Classes\Controllers\TrendingContr;
+use Classes\Views\TrendingView;
+
+use Classes\Controllers\RsdContr;
+use Classes\Views\RsdView;
 
 
-$pdo = new PDO($dsn,$user,$pwd);
-$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-$resultPerPage = 2;
-
+// AVAILABLE
 $avaView = new AvailableView();
 $avaContr = new AvailableContr();
 
+$avaContr->cookiesFunc();
 $pageCountAva = $avaContr->paginateCount();
 $dataAva = $avaView->get();
 
 
-
-
-
-// $resultPerPage = 2;
-
-// // AVAILABLE
-// $dbQueryAva = $pdo->query("SELECT COUNT(*) FROM available");
-// $rowCountAva  = $dbQueryAva->fetchColumn();
-// $pageCountAva = ceil($rowCountAva/$resultPerPage);
-
-
-// if (!isset($_GET['page-ava'])) {
-// 	$pageAva = 1;
-// }else{
-// 	$pageAva = $_GET['page-ava'];
-// }
-
-// $offsetAva =  ($pageAva-1)*$resultPerPage;
-
-
 // TRENDING
-$dbQueryTrn = $pdo->query("SELECT COUNT(*) FROM trending");
-$rowCountTrn  = $dbQueryTrn->fetchColumn();
-$numOfPagesTrn = ceil($rowCountTrn/$resultPerPage);
+$trnView = new TrendingView();
+$trnContr = new TrendingContr();
+
+$pageCountTrn = $trnContr->paginateCount();
+$dataTrn = $trnView->get();
 
 
-if (!isset($_GET['page-trn'])) {
-	$pageTrn = 1;
-}else{
-	$pageTrn = $_GET['page-trn'];
-}
-
-$offsetTrn =  ($pageTrn-1)*$resultPerPage;
 
 // RECENTLY SOLD
-$dbQueryRsd = $pdo->query("SELECT COUNT(*) FROM recently_created");
-$rowCountRsd  = $dbQueryRsd->fetchColumn();
-$numOfPagesRsd = ceil($rowCountRsd/$resultPerPage);
+$rsdview = new RsdView();
+$rsdContr = new RsdContr();
 
-
-if (!isset($_GET['page-rsd'])) {
-	$pageRsd = 1;
-}else{
-	$pageRsd = $_GET['page-rsd'];
-}
-
-$offsetRsd =  ($pageRsd-1)*$resultPerPage;
-
-
-
-$stmtTrn = $pdo->query("SELECT * FROM trending ORDER BY id desc LIMIT $offsetTrn,$resultPerPage");
-$stmtRsd = $pdo->query("SELECT * FROM recently_created ORDER BY id desc LIMIT $offsetRsd,$resultPerPage");
+$pageCountRsd = $rsdContr->paginateCount();
+$dataRsd = $rsdview->get();
 
 ?>
 
@@ -102,7 +63,7 @@ $stmtRsd = $pdo->query("SELECT * FROM recently_created ORDER BY id desc LIMIT $o
 		</div>
 		<div class="trending border">
 			<h2>Trending</h2>
-			<?php while ($rowTrn = $stmtTrn->fetch()) { ?>
+			<?php while ($rowTrn = $dataTrn->fetch()) { ?>
 			<img src="img/<?php echo $rowTrn['image']; ?>" alt="truck">
 			<p>Description: <strong><?php echo htmlspecialchars($rowTrn['description']); ?></strong></p>
 			<p>Price: <strong>₦<?php echo htmlspecialchars($rowTrn['price']); ?></strong></p>
@@ -114,13 +75,13 @@ $stmtRsd = $pdo->query("SELECT * FROM recently_created ORDER BY id desc LIMIT $o
 				<?php endif ?>
 			</div>
 			<?php } ?>
-			<?php for ($page=1; $page <= $numOfPagesTrn; $page++) { ?>
+			<?php for ($page=1; $page <= $pageCountTrn; $page++) { ?>
 					<a href="index.php?page-trn=<?php echo $page ?>" class="pag-links"><?php echo $page ?></a>
 				<?php } ?>
 		</div>
 		<div class="sold border">
 			<h2>Recently Sold</h2>
-			<?php while ($rowRsd = $stmtRsd->fetch()) { ?>
+			<?php while ($rowRsd = $dataRsd->fetch()) { ?>
 			<img src="img/<?php echo $rowRsd['image']; ?>" alt="truck">
 			<p>Description: <strong><?php echo htmlspecialchars($rowRsd['description']); ?></strong></p>
 			<p>Price: <strong>₦<?php echo htmlspecialchars($rowRsd['price']); ?></strong></p>
@@ -132,18 +93,12 @@ $stmtRsd = $pdo->query("SELECT * FROM recently_created ORDER BY id desc LIMIT $o
 				<?php endif ?>			
 			</div>
 			<?php } ?>
-			<?php for ($page=1; $page <= $numOfPagesRsd; $page++) { ?>
+			<?php for ($page=1; $page <= $pageCountRsd; $page++) { ?>
 					<a href="index.php?page-rsd=<?php echo $page ?>" class="pag-links"><?php echo $page ?></a>
 				<?php } ?>
 		</div>
 	</div>
-	<?php if (!empty($_SESSION['password'])) {?>
-			<div class="align-btn">
-				<a class="logout" href="logout.php">Logout</a>
-		</div>
-	<?php } ?>
+	<?php $avaContr->logoutBtn() ?>
 </div>
 
 <?php include'./inc/footer.php' ?>
-</body>
-</html>

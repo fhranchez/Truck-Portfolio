@@ -1,8 +1,8 @@
 <?php 
-	session_start();
-	session_destroy();
+	include_once ('./inc/autoloader.inc.php');
+	
+	use Classes\Controllers\AvailableContr;
+	
+	$obj = new AvailableContr();
 
-	header('location: index.php');
-
-
- ?>
+	$obj->logout();

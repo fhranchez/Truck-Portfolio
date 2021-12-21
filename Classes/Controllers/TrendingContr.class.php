@@ -1,30 +1,31 @@
 <?php 
 namespace Classes\Controllers;
 
-use  Classes\Models as Models;
+use Classes\Models as Models;
+use Classes\Controllers as Controllers;
 
 class TrendingContr extends Models\Trending {
+	use Controllers\Controller;
+
 	public function create() {
-		$msgs = $this->createAllDataQry();
+		$msgs = $this->createAllData();
 
 		return $msgs;
 	}
 
 	public function update() {
-		$msgs = $this->updateDataQry();
+		$msgs = $this->updateData();
 
 		return $msgs;
 	}
 
 	public function delete() {
-		$this->deleteSingleIdQry();
+		$this->deleteSingleId();
 	}
 
-	public function pagination() {
-		$query = $this->connect()->query("SELECT COUNT(*) FROM $this->tbName");
-		$rowCount  = $query->fetchColumn();
-		$numOfPages = ceil($rowCount/$this->resultPerPage);
+	public function paginateCount() {
+		$data = $this->pagination($this->tbName);
 
-		return $numOfPages;
+		return $data;
 	}
 }

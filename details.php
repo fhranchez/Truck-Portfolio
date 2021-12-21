@@ -1,57 +1,47 @@
 <?php
-session_start();
-
-include('./inc/dbConn.php');
 include_once('inc/autoloader.inc.php');
 
 use Classes\Controllers\AvailableContr;
 use Classes\Views\AvailableView;
 
-$pdo = new PDO($dsn,$user,$pwd);
-$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+use Classes\Controllers\TrendingContr;
+use Classes\Views\TrendingView;
 
-if (isset($_GET['trn-id'])) {
-
-	$idTrn = $_GET['trn-id'];
-	$sqlTrn = "SELECT * FROM trending WHERE id =:id";
-	$stmtTrn = $pdo->prepare($sqlTrn);
-	$stmtTrn->execute(['id' => $idTrn]);
-	$dataTrn = $stmtTrn->fetchAll();
-}
-
-if (isset($_GET['rsd-id'])) {
-
-	$idRsd = $_GET['rsd-id'];
-	$sqlRsd = "SELECT * FROM recently_created WHERE id =:id";
-	$stmtRsd = $pdo->prepare($sqlRsd);
-	$stmtRsd->execute(['id' => $idRsd]);
-	$dataRsd = $stmtRsd->fetchAll();
-}
+use Classes\Controllers\RsdContr;
+use Classes\Views\RsdView;
 
 
+//AVAILABLE
 $avaContr = new AvailableContr();
 $avaView = new AvailableView();
 
+//Cookies
+$avaContr->cookiesFunc();
 // DIsplaying a Single Row
 $dataAva = $avaView->getId();
-
 //Deleting Data
 $avaContr->delete();
 
 
-if (isset($_POST['deleteTrn'])) {
-	$idTrn = $_POST['id_to_deleteTrn'];
-	$sqlTrn = "DELETE FROM trending WHERE id = :id";
-	$stmtTrn = $pdo->prepare($sqlTrn);
-	$stmtTrn->execute(['id' => $idTrn]);
-}
 
-if (isset($_POST['deleteRsd'])) {
-	$idRsd = $_POST['id_to_deleteRsd'];
-	$sqlRsd = "DELETE FROM recently_created WHERE id = :id";
-	$stmtRsd = $pdo->prepare($sqlRsd);
-	$stmtRsd->execute(['id' => $idRsd]);
-}
+//TRENDING
+$TrnContr = new TrendingContr();
+$trnView = new TrendingView();
+// DIsplaying a Single Row
+$dataTrn = $trnView->getId();
+//Deleting Data
+$TrnContr->delete();
+
+
+
+// RECENTLY SOLD
+$RsdContr = new RsdContr();
+$rsdView = new RsdView();
+// DIsplaying a Single Row
+$dataRsd = $rsdView->getId();
+//Deleting Data
+$RsdContr->delete();
+
 
 $sess = $_SESSION['password'] ?? ''
 ?>

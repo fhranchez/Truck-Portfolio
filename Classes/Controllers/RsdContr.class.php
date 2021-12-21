@@ -4,7 +4,7 @@ namespace Classes\Controllers;
 use Classes\Models as Models;
 use Classes\Controllers as Controllers;
 
-class AvailableContr extends Models\Available {
+class RsdContr extends Models\Rsd {
 	use Controllers\Controller;
 
 	public function create() {
@@ -27,27 +27,5 @@ class AvailableContr extends Models\Available {
 		$data = $this->pagination($this->tbName);
 
 		return $data;
-	}
-
-	public function cookiesFunc() {
-		$msg = $this->cookies();
-	
-	return $msg;
-	}
-
-	public function auth() {
-		$this->loginAuth();
-	}
-
-	public function logout() {
-		$this->sessionLogout();
-	}
-
-	public function logoutBtn() {
-		 if (!empty($_SESSION['password'])) {
-			echo '<div class="align-btn">
-				<a class="logout" href="logout.php">Logout</a>
-		</div>';
-		}
 	}
 }

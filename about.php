@@ -1,18 +1,13 @@
 <?php 
-session_start();
+include_once ('./inc/autoloader.inc.php');
+
+use Classes\Controllers\AvailableContr;
+
+$obj = new AvailableContr();
+$obj->cookiesFunc();
+
  ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
- 	<link rel="stylesheet" href="css/kenneth_index.css?v<?php echo time(); ?>">
- 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-</head>
-<body>
-  <div class="container">
 	<?php include'./inc/header.php' ?>
 
 	<?php include'./inc/navbar.php' ?>
@@ -26,9 +21,5 @@ session_start();
 		<p>We are a registered company with rc number <strong>1712733</strong> and we do legit business with our clients</p>
 
 	</div>
-	
-</div>
 
 <?php include'./inc/footer.php' ?>
-</body>
-</html>

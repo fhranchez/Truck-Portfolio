@@ -3,10 +3,10 @@ namespace Classes\Models;
 
 trait Model{
 	use \Classes\Dbh;
-	
+
 	protected $resultPerPage = 2;
 
-	protected function createAllDataQry($submit,$description,$phone,$price,$image,$imgText,$tbName) {
+	protected function createAllDataQry($submit,$description,$phone,$price,$image,$imgText,$imgTmp,$tbName) {
 		$msgs = [];
 		if (isset($submit)) {
 			$des = trim($description);
@@ -24,10 +24,10 @@ trait Model{
 				$stmt = $this->connect()->prepare($sql);
 				$stmt->execute(['img' => $img, 'img_text' => $imgT, 'des' => $des, 'price' => $pri, 'phone' => $ph]);
 
-				if (move_uploaded_file($img, $target)) {
-			  		$msgs['img_msg'] = "Image uploaded successfully";
+				if (move_uploaded_file($imgTmp, $target)) {
+			  		$msgs['img_msg_success'] = "Image uploaded successfully";
 			  	}else{
-			  		$msgs['img_msg'] = "Failed to upload image";
+			  		$msgs['img_msg_error'] = "Failed to upload image";
 			  	}
 		  		$msgs['congrats'] =  'File uploaded successfully';
 		   }

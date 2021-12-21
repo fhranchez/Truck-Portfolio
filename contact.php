@@ -1,13 +1,19 @@
 <?php 
-session_start();
+include_once('inc/autoloader.inc.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use Classes\Controllers\AvailableContr;
+
 
 require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
+
+$avaContr = new AvailableContr();
+$avaContr->cookiesFunc();
+
 
 if (isset($_POST['submit'])) {
 
@@ -20,7 +26,7 @@ try {
     $mail->isSMTP();                                            // Send using SMTP
     $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send through
     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-    $mail->Username   = "kngautosmail@gmail.com";                     // SMTP username
+    $mail->Username   = "test@gmail.com";                     // SMTP username
     $mail->Password   = "test123";                               // SMTP password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
     $mail->Port       = 465;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
@@ -60,20 +66,9 @@ if (isset($_POST['submit'])) {
 
  ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us</title>
- 	<link rel="stylesheet" href="css/kenneth_index.css?v<?php echo time(); ?>">
- 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-</head>
-<body>
-  <div class="container">
 	<?php include'./inc/header.php' ?>
 		
-		<?php include'./inc/navbar.php' ?>
+	<?php include'./inc/navbar.php' ?>
 
 	<form action="contact.php" method="POST" class="contactainer">
 		<h1>Contact Us</h1>
@@ -89,7 +84,5 @@ if (isset($_POST['submit'])) {
 		<p id="error-text"><?php echo $error ?? '' ?></p>
 		<p id="success-text"><?php echo $affirm ?? '' ?></p>
 	</form>
-</div>
-<?php include'./inc/footer.php' ?>
-</body>
-</html>
+
+    <?php include'./inc/footer.php' ?>

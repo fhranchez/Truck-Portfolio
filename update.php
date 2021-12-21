@@ -1,92 +1,53 @@
 <?php
-session_start();
-$sess = $_SESSION['password'] ?? '';
-if (!$sess) {
-	echo '<script language="javascript">window.location="admin.php";</script>'; die();
-}
-
-include('./inc/dbConn.php');
 include_once('inc/autoloader.inc.php');
 
 use Classes\Controllers\AvailableContr;
 use Classes\Views\AvailableView;
 
+use Classes\Controllers\TrendingContr;
+use Classes\Views\TrendingView;
 
-$pdo = new PDO($dsn,$user,$pwd);
+use Classes\Controllers\RsdContr;
+use Classes\Views\RsdView;
 
+
+// AVAILABLE
 $avaView = new AvailableView();
+$avaContr = new AvailableContr();
+
+// Login Authentication
+$avaContr->auth();
+
+//Getting data
 $result = $avaView->getId();
 
 
-
-$fetchIdTrn = $_GET['trn-id'] ?? ''; 
-$fetchSqlTrn = "SELECT * FROM trending WHERE id = :id";
-$fetchStmtTrn = $pdo->prepare($fetchSqlTrn);
-$fetchStmtTrn->execute(['id' => $fetchIdTrn]);
-
-$resultTrn = $fetchStmtTrn->fetchAll();
-
-$fetchIdRsd = $_GET['rsd-id'] ?? ''; 
-$fetchSqlRsd = "SELECT * FROM recently_created WHERE id = :id";
-$fetchStmtRsd = $pdo->prepare($fetchSqlRsd);
-$fetchStmtRsd->execute(['id' => $fetchIdRsd]);
-
-$resultRsd = $fetchStmtRsd->fetchAll();
-
-// Updating THe Available Table
-$objAva = new AvailableContr();
-
-$msgs = $objAva->update();
+//Updating Data
+$msgs = $avaContr->update();
 
 
- if (isset($_POST['submit-trn'])) {
-	$idTrn = $_GET['trn-id'] ?? '';
-	$desTrn = trim($_POST['description-trn'] ?? '');
-	$priceTrn = trim($_POST['price-trn'] ?? '');
-	$phoneTrn = trim($_POST['phone-trn'] ?? '');
-	$imageTrn = $_FILES['imgTrn']['name'] ?? '';
- 	$imgPathTrn = "img/". basename($imageTrn);
+
+//TRENDING
+$trnView = new TrendingView();
+//Getting data
+$resultTrn = $trnView->getId();
+
+// Updating data
+$objTrn = new TrendingContr();
+$msgsTrn = $objTrn->update();
 
 
-	//form validation
- 	if (empty($desTrn) || empty($priceTrn) || empty($phoneTrn) || empty($imageTrn)) {
- 		$errorTrn = '*All fields are required*';
- 	}else {
- 		$sqlTrn = "UPDATE trending SET description = :des, price = :price, image = :image, phone = :phone WHERE id = :id";
- 		$stmtTrn = $pdo->prepare($sqlTrn); 
- 		$stmtTrn->execute(['des' => $desTrn, 'price' => $priceTrn, 'image' => $imageTrn, 'phone' => $phoneTrn, 'id' => $idTrn]);
 
- 		if (!move_uploaded_file($_FILES['imgTrn']['tmp_name'], $imgPathTrn)) {
-	  		$msgTrn = "Failed to upload image";
-	  	}
-	  	$successTrn = 'file uploaded successfully';
- 	}
- }
+//RECENTLY SOLD
+$rsdView = new RsdView();
+//Getting data
+$resultRsd = $rsdView->getId();
 
- if (isset($_POST['submit-rsd'])) {
-	$idRsd = $_GET['rsd-id'] ?? '';
-	$desRsd = trim($_POST['description-rsd'] ?? '');
-	$priceRsd = trim($_POST['price-rsd'] ?? '');
-	$phoneRsd = trim($_POST['phone-rsd'] ?? '');
-	$imageRsd = $_FILES['imgRsd']['name'] ?? '';
- 	$imgPathRsd = "img/". basename($imageRsd);
+// Updating data
+$objRsd = new RsdContr();
+$msgsRsd = $objRsd->update();
 
-
-	//form validation
- 	if (empty($desRsd) || empty($priceRsd) || empty($phoneRsd) || empty($imageRsd)) {
- 		$errorRsd = '*All fields are required*';
- 	}else {
- 		$sqlRsd = "UPDATE recently_created SET description = :des, price = :price, image = :image, phone = :phone WHERE id = :id";
- 		$stmtRsd = $pdo->prepare($sqlRsd); 
- 		$stmtRsd->execute(['des' => $desRsd, 'price' => $priceRsd, 'image' => $imageRsd, 'phone' => $phoneRsd, 'id' => $idRsd]);
-
- 		if (!move_uploaded_file($_FILES['imgRsd']['tmp_name'], $imgPathRsd)) {
-	  		$msgRsd = "Failed to upload image";
-	  	}
-	  	$successRsd = 'file uploaded successfully';
- 	}
- } 
-
+ 
 ?>
 
 <?php include'./inc/header.php' ?>
@@ -149,9 +110,10 @@ $msgs = $objAva->update();
 					<input type="submit" value="Edit" name="submit-trn">
 				<?php endforeach ?>
 			<?php endif ?>
-					<p id="error-text"><?php echo $errorTrn ?? '' ?></p>
-					<p id="error-text"><?php echo $msgTrn ?? '' ?></p>
-					<p id="success-text"><?php echo $successTrn ?? '' ?></p>
+					<p id="error-text"><?php echo $msgsTrn['error'] ?? '' ?></p>
+					<p id="error-text"><?php echo $msgsTrn['img_msg'] ?? '' ?></p>
+					<p id="success-text"><?php echo $msgsTrn['success'] ?? '' ?></p>
+
 
 <!-- Recently Sold -->
 				<?php if (isset($_GET['rsd-id'])): ?>
@@ -179,9 +141,10 @@ $msgs = $objAva->update();
 					<input type="submit" value="Edit" name="submit-rsd">
 				<?php endforeach ?>
 			<?php endif ?>
-					<p id="error-text"><?php echo $errorRsd ?? '' ?></p>
-					<p id="error-text"><?php echo $msgRsd ?? '' ?></p>
-					<p id="success-text"><?php echo $successRsd ?? '' ?></p>
+					<p id="error-text"><?php echo $msgsRsd['error'] ?? '' ?></p>
+					<p id="error-text"><?php echo $msgsRsd['img_msg'] ?? '' ?></p>
+					<p id="success-text"><?php echo $msgsRsd['success'] ?? '' ?></p>
+
 
 		</form>
 	

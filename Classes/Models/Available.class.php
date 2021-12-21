@@ -1,7 +1,7 @@
 <?php  
 namespace Classes\Models;
 
-use  Classes\Models as Models;
+use Classes\Models as Models;
 
 class Available{
 	use Models\Model;
@@ -16,6 +16,7 @@ class Available{
 				$_POST['priceAva'] ?? '',
 				$_FILES['imgAva']['name'] ?? '',
 				$_POST['imgTextAva'] ?? '',
+				$_FILES['imgAva']['tmp_name'] ?? null,
 				$this->tbName
 				);
 		
