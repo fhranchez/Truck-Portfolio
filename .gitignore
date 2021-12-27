@@ -1,5 +1,2 @@
-#Images files extension to ignore
-.png
-.jpg
-.svg
-.tmp
+#Images folder to ignore
+img
